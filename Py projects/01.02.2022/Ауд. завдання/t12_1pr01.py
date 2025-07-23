@@ -1,0 +1,108 @@
+#  t12_1pr01.py
+from struct import pack, unpack
+
+def exist_tria(a, b, c):
+    '''? Чи є тикутник при значеннях чисел a,b,c.
+
+    '''
+    f = a > 0 and b > 0 and c > 0
+    return f and a + b > c and b + c > a and c + a > b
+
+def per(a, b, c):
+    '''Периметр трикутника зі сторонами a,b,c.
+
+    '''
+    return a + b + c
+
+def area(a, b, c):
+    '''Площа трикутника зі сторонами a,b,c.
+
+    '''
+    p = 0.5 * per(a, b, c)
+    return (p * (p - a) * (p - b) * (p - c)) ** 0.5
+
+def get_txt(namef_in, Type, namef_out):
+    '''Читання і обробка текстового файлу з числами типу Type.
+
+       namef_in - повне ім'я вхідного файла на зовнішньому носії;
+       Type  - тип чисел;
+       namef_out - повне ім'я вихідного файла на зовнішньому носії.
+    '''
+    fi = open(namef_in); fo = open(namef_out, 'w')
+    for L in fi:
+        if len(L) > 0:
+            L = L.split()
+            if len(L) > 2:
+                for i in range(3):
+                    L[i] = Type(L[i])
+                L = L[0:3]
+                if exist_tria(*L) :
+                    P = per(*L)
+                    S = area(*L)
+                    fo.write("%g %g %g %f %e\n" % (L[0], L[1], L[2], P, S))
+    fi.close(); fo.close()
+
+def print_txtf(namef):
+    '''Друк вмісту текстового файлу.
+
+    '''
+    f = open(namef); print("\nІм'я файлу=", namef)
+    while True :
+        L = f.readline()
+        if len(L) == 0 : break
+        print(L, end=' ')
+    print()
+    f.close()
+
+def get_txt_to_bin(namef_in, Type, namef_out):
+    '''Читання і обробка текстового файлу з числами типу Type.
+
+       namef_in - повне ім'я вхідного файла на зовнішньому носії;
+       Type  - тип чисел;
+       namef_out - повне ім'я вихідного бінарного файла на зовнішньому носії.
+    '''
+    fi = open(namef_in)
+    fo = open(namef_out, 'wb')  # бінарний файл для запису
+    fmt = "d"*5                 # формат для запису 5-ти дійсних чисел (double)
+    for L in fi:
+        if len(L) > 0:
+            L = L.split()
+            if len(L) > 2:
+                for i in range(3):
+                    L[i] = Type(L[i])
+                L = L[0:3]
+                if exist_tria(*L) :
+                    P = per(*L)
+                    S = area(*L)
+                    fo.write(pack(fmt, L[0], L[1], L[2], P, S))
+                    fo.flush()
+    fi.close(); fo.close()
+
+def print_binf(namef, nb, fmt):
+    '''Друк вмісту бінарного файлу.
+
+    '''
+    f = open(namef,"rb"); print("\nІм'я файлу=", namef)
+    s = f.read(nb)              # читання nb байт
+    while s :
+        x = unpack(fmt, s)
+        s = ""
+        for e in x:
+            s += "%13.5g " % e
+        print(s)
+        s = f.read(nb)
+    print()
+    f.close()
+
+if __name__ == "__main__" :
+    in_f = input("Введіть повне ім'я вхідного txt-файлу на зовнішньому носії :\n")
+    print("  a) :")
+    out_f = input("Введіть повне ім'я вихідного txt-файлу на зовнішньому носії :\n")
+    print_txtf(in_f)
+    get_txt(in_f, float, out_f)
+    print_txtf(out_f)
+    print("  b) :")
+    out_f = input("Введіть повне ім'я вихідного bin-файлу на зовнішньому носії :\n")
+    print_txtf(in_f)
+    get_txt_to_bin(in_f, float, out_f)
+    print_binf(out_f, 40, "d"*5)

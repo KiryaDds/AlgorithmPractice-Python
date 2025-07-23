@@ -1,0 +1,6 @@
+A = input("A = ")
+A1 = A.replace(".", "...")
+A2 = A1.replace("!", ".")
+A3 = A2.replace("*", "+")
+print(A3)
+input()
