@@ -1,0 +1,83 @@
+
+"""
+Реалізуйте каталог деякої бібліотеки.
+Бібліотека може містити кілька книг одного автора.
+"""
+
+
+def init():
+    """ Викликається 1 раз на початку виконання програми. """
+    global max_size, keys, values
+
+    max_size = 100007
+    keys = [None] * max_size
+    values = [None] * max_size
+
+
+N = 31
+def Hash_author(S):
+    h = 0
+    for i in range(len(S)):
+        h = h * N + ord(S[i])
+    return h % max_size
+
+
+def addBook(author, title):
+    """ Додає книгу до бібліотеки.
+    :param author: Автор книги
+    :param title: Назва книги
+    """
+    current = Hash_author(author)
+    while keys[current] != None:
+        if values[current] == title:
+            values[current] = title
+            return
+        current = (current + 1) % max_size
+
+    keys[current] = author
+    values[current] = title
+
+
+def find(author, title):
+    """ Перевірає чи міститься задана книга у бібліотеці.
+    :param author: Автор
+    :param title: Назва книги
+    :return: True, якщо книга міститься у бібліотеці та False у іншому разі.
+    """
+    current = Hash_author(author)
+    while keys[current] != None:
+        if values[current] == title:
+            return True
+        current = (current + 1) % max_size
+        
+    return False
+
+
+def delete(author, title):
+    """ Видаляє книгу з бібліотеки.
+    :param author: Автор
+    :param title: Назва книги
+    """
+    current = Hash_author(author)
+    while keys[current] != None:
+        if values[current] == title:
+            keys[current] = None
+            values[current] = None
+            return
+        current = (current + 1) % max_size
+
+
+def findByAuthor(author):
+    """ Повертає список книг заданого автора.
+    Якщо бібліотека не міститься книг заданого автора, то підпрограма повертає порожній список.
+    :param author: Автор
+    :return: Список книг заданого автора у алфавітному порядку.
+    """
+    books_byAuthor = list()
+    current = Hash_author(author)
+    while keys[current] != None:
+        if keys[current] == author:
+            books_byAuthor.append(values[current])
+        current = (current + 1) % max_size
+        
+    return books_byAuthor
